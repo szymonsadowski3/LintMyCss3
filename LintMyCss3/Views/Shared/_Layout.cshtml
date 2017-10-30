@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="//rawgit.com/saribe/eModal/master/dist/eModal.min.js"></script>
+    <script type="text/jsx">
+        class App extends React.Component {
+            constructor() {
+                super();
+                this.fetchWarnings = this.fetchWarnings.bind(this);
+                this.handleChange = this.handleChange.bind(this);
+                this.state = {
+                    textareaVal: ""
+                };
+            }
+
+            handleChange(event) {
+                this.setState({textareaVal: event.target.value});
+            }
+
+            render() {
+                return (
+                    <div className="app">
+                        <textarea rows="4" cols="50" className="cssContent" value={this.state.textareaVal} onChange={this.handleChange}>
+                        </textarea>
+                        <button type="button" className="btn btn-default" id="submitter" onClick={this.fetchWarnings}>Submit</button>
+                    </div>);
+            }
+
+            fetchWarnings() {
+                axios.post('/linter', { "content": this.state.textareaVal })
+                .then(function (response) {
+                    var warnings = response["data"]["Data"]["warnings"];
+
+                    if(warnings.length > 0) {
+                        alert(JSON.stringify(warnings));
+                    } else {
+                        alert("No warnings found");
+                    }
+                })
+                .catch(function (error) {
+                    eModal.alert("Error!");
+                });
+            }
+        }
+
+        ReactDOM.render(
+        React.createElement(App, null),
+        document.getElementById('main')
+        );
+
+     </script>
+</head>
+<body>
+    @*<div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
+                    <li>@Html.ActionLink("API", "Index", "Help", new { area = "" }, null)</li>
+                </ul>
+            </div>
+        </div>
+    </div>*@
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
